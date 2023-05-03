@@ -1,113 +1,66 @@
-import zlib
-import heapq
-import os
-from collections import Counter
+import pickle
+
+from fastapi import FastAPI, UploadFile, File
+from fastapi.responses import StreamingResponse
+from typing import List
 import io
-from PIL import Image
+import os
+import heapq
+
+app = FastAPI()
 
 
-class Nodes:
-    def __init__(self, probability, symbol, left=None, right=None):
-        self.probability = probability
-
-        self.symbol = symbol
+class HuffmanNode:
+    def __init__(self, char, freq, left=None, right=None):
+        self.char = char
+        self.freq = freq
         self.left = left
         self.right = right
 
-        # the tree direction (0 or 1)
-        self.code = ""
+    def __lt__(self, other):
+        return self.freq < other.freq
 
 
-def CalculateProbability(the_data):
-    the_symbols = dict()
-    for item in the_data:
-        if not the_symbols.get(item):
-            the_symbols[item] = 1
+def compress_huffman(upload_file: UploadFile) -> StreamingResponse:
+    if not upload_file.filename.endswith('.txt'):
+        return 'File is not a text file'
+
+        # Read the file content
+    file_content = upload_file.file.read()
+
+    # Get the frequency of each character in the file
+    char_frequency = {}
+    for char in file_content:
+        if char in char_frequency:
+            char_frequency[char] += 1
         else:
-            the_symbols[item] += 1
-    return the_symbols
+            char_frequency[char] = 1
 
+    # Build the Huffman tree
+    heap = [[freq, [char, '']] for char, freq in char_frequency.items()]
+    heapq.heapify(heap)
+    while len(heap) > 1:
+        lo = heapq.heappop(heap)
+        hi = heapq.heappop(heap)
+        for pair in lo[1:]:
+            pair[1] = '0' + pair[1]
+        for pair in hi[1:]:
+            pair[1] = '1' + pair[1]
+        heapq.heappush(heap, [lo[0] + hi[0]] + lo[1:] + hi[1:])
 
-the_codes = dict()
+    # Convert the Huffman tree to a dictionary
+    huffman_tree = dict(heapq.heappop(heap)[1:])
 
+    # Compress the file content using the Huffman tree
+    compressed_content = ''.join(huffman_tree[char] for char in file_content)
 
-def CalculateCodes(node, value=""):
-    newValue = value + str(node.code)
+    # Write the compressed content to a buffer
+    compressed_buffer = io.BytesIO()
+    pickle.dump(huffman_tree, compressed_buffer)
+    compressed_buffer.write(int(compressed_content, 2).to_bytes((len(compressed_content) + 7) // 8, byteorder='big'))
 
-    if node.left:
-        CalculateCodes(node.left, newValue)
-    if node.right:
-        CalculateCodes(node.right, newValue)
+    # Seek to the beginning of the buffer
+    compressed_buffer.seek(0)
 
-    if not node.left and not node.right:
-        the_codes[node.symbol] = newValue
+    return compressed_buffer
 
-    return the_codes
-
-
-def OutputEncoded(the_data, coding):
-    encodingOutput = []
-    for element in the_data:
-        print(coding[element], end="")
-        encodingOutput.append(coding[element])
-
-    the_string = "".join([str(item) for item in encodingOutput])
-    return the_string
-
-
-def TotalGain(the_data, coding):
-    # total bit space to store the data before compression
-    beforeCompression = len(the_data) * 8
-    afterCompression = 0
-    the_symbols = coding.keys()
-    for symbol in the_symbols:
-        the_count = the_data.count(symbol)
-        # calculating how many bit is required for that symbol in total
-        afterCompression += the_count * len(coding[symbol])
-    print("Space usage before compression (in bits):", beforeCompression)
-    print("Space usage after compression (in bits):", afterCompression)
-
-
-def compress_huffman(the_data):
-    symbolWithProbs = CalculateProbability(the_data)
-    the_symbols = symbolWithProbs.keys()
-    the_probabilities = symbolWithProbs.values()
-    print("symbols: ", the_symbols)
-    print("probabilities: ", the_probabilities)
-
-    the_nodes = []
-
-    # converting symbols and probabilities into huffman tree nodes
-    for symbol in the_symbols:
-        the_nodes.append(Nodes(symbolWithProbs.get(symbol), symbol))
-
-    while len(the_nodes) > 1:
-        # sorting all the nodes in ascending order based on their probability
-        the_nodes = sorted(the_nodes, key=lambda x: x.probability)
-        # for node in nodes:
-        #      print(node.symbol, node.prob)
-
-        # picking two smallest nodes
-        right = the_nodes[0]
-        left = the_nodes[1]
-
-        left.code = 0
-        right.code = 1
-
-        # combining the 2 smallest nodes to create new node
-        newNode = Nodes(
-            left.probability + right.probability,
-            left.symbol + right.symbol,
-            left,
-            right,
-        )
-
-        the_nodes.remove(left)
-        the_nodes.remove(right)
-        the_nodes.append(newNode)
-
-    huffmanEncoding = CalculateCodes(the_nodes[0])
-    print("symbols with codes", huffmanEncoding)
-    TotalGain(the_data, huffmanEncoding)
-    encoded_output = OutputEncoded(the_data, huffmanEncoding)
-    return encoded_output, the_nodes[0]

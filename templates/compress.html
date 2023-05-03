@@ -1,0 +1,275 @@
+<!-- <!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="starz.css">
+    <title>Сжатие данных</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #000;
+      }
+      #container {
+        width: 800px;
+        margin: 0 auto;
+        background-color: white;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+      }
+      h1 {
+        font-size: 36px;
+        text-align: center;
+        margin-top: 0;
+      }
+      .input-output-container {
+        display: flex;
+        margin-bottom: 20px;
+      }
+      .input-container,
+      .output-container {
+        flex-basis: 50%;
+        padding: 10px;
+        box-sizing: border-box;
+      }
+      .input-container {
+        border-right: 1px solid #ccc;
+      }
+      .drag-drop {
+        height: 200px;
+        border: 2px dashed #ccc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      }
+      .drag-drop.active {
+        background-color: #e5e5e5;
+      }
+      #output {
+        height: 200px;
+        overflow-y: auto;
+      }
+      button {
+        display: block;
+        margin: 0 auto;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 18px;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #0069d9;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <h1>Сжатие данных</h1>
+      <div class="input-output-container">
+        <div class="input-container">
+          <div class="drag-drop" id="input">
+            <p>Перетащите файлы сюда</p>
+          </div>
+        </div>
+        <div class="output-container">
+          <div id="output"></div>
+        </div>
+      </div>
+      <button id="compress-button">Сжать данные</button>
+    </div>
+    <script>
+      const input = document.getElementById("input");
+      const output = document.getElementById("output");
+      const compressButton = document.getElementById("compress-button");
+
+      input.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        input.classList.add("active");
+      });
+
+      input.addEventListener("dragleave", () => {
+        input.classList.remove("active");
+      });
+
+      input.addEventListener("drop", (e) => {
+        e.preventDefault();
+        input.classList.remove("active");
+        const file = e.dataTransfer.files[0];
+        const reader = new FileReader();
+        reader.onload = () => {
+          output.innerHTML = reader.result;
+        };
+        reader.readAsText(file);
+      });
+
+      compressButton.addEventListener("click", () => {
+        const data = output.innerText;
+        output.innerHTML='<h1>data compressed<h1/>'
+        // Код для сжатия данных
+      });
+    </script>
+    <script src="stars2.js"></script>
+    <script src="split.js"></script>
+  </body>
+</html> -->
+<html>
+  <head>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', path='/images/favicon.ico') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', path='style.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', path='starz.css') }}">
+    <!-- Plausible Analytics -- https:/plausible.io -->
+    <script defer data-domain="docs.apeworx.io" src="https://plausible.io/js/script.js"></script>
+    <title>ApeDocs - ApeWorX, LTD</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #000;
+      }
+      #container {
+        width: 800px;
+        margin: 0 auto;
+        background-color: white;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+      }
+      h1 {
+        font-size: 36px;
+        text-align: center;
+        margin-top: 0;
+      }
+      .input-output-container {
+        display: flex;
+        margin-bottom: 20px;
+      }
+      .input-container,
+      .output-container {
+        flex-basis: 50%;
+        padding: 10px;
+        box-sizing: border-box;
+      }
+      .input-container {
+        border-right: 1px solid #ccc;
+      }
+      .drag-drop {
+        height: 200px;
+        border: 2px dashed #ccc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      }
+      .drag-drop.active {
+        background-color: #e5e5e5;
+      }
+      #output {
+        height: 200px;
+        overflow-y: auto;
+      }
+      button {
+        display: block;
+        margin: 0 auto;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 18px;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #0069d9;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="./index.html">
+        <div class="navLogo"></div>
+      </a>
+    </nav>
+
+    <header></header>
+    <style>
+       #stars {
+         max-height:90vh;
+         overflow:hidden;
+       }
+    </style>
+    <div id="stars"></div>
+    <main>
+      <body>
+        <div id="container">
+          <h1>Сжатие данных</h1>
+          <div class="input-output-container">
+            <div class="input-container">
+              <div class="drag-drop" id="input">
+                <p>Перетащите файлы сюда</p>
+              </div>
+            </div>
+            <div class="output-container">
+              <div id="output"></div>
+            </div>
+          </div>
+          <button id="compress-button">Сжать данные</button>
+        </div>
+        <script>
+          const input = document.getElementById("input");
+          const output = document.getElementById("output");
+          const compressButton = document.getElementById("compress-button");
+    
+          input.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            input.classList.add("active");
+          });
+    
+          input.addEventListener("dragleave", () => {
+            input.classList.remove("active");
+          });
+    
+          input.addEventListener("drop", (e) => {
+            e.preventDefault();
+            output.innerHTML = '<h1>Checking data...</h1>';
+            input.classList.remove("active");
+            const file = e.dataTransfer.files[0];
+            const reader = new FileReader();
+          });
+    
+          compressButton.addEventListener("click", () => {
+            const data = input.files[0];
+            output.innerHTML = '<h1>Compressing data...</h1>';
+
+            // Make an HTTP POST request to the FastAPI application to compress the data
+            fetch('/api/compress', {
+              method: 'POST',
+              body: data
+            })
+            .then((response) => {
+              // Create a new blob object from the streamed response
+              const blob = new Blob([response.body]);
+
+              // Create a download link and simulate a click to download the compressed file
+              const url = window.URL.createObjectURL(blob);
+              const link = document.createElement('a');
+              link.href = url;
+              link.download = 'compressed_file.png';
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+
+              // Update the output element to indicate that compression is complete
+              output.innerHTML = '<h1>Compression complete!</h1>';
+            })
+            .catch((error) => {
+              console.error('Error compressing data:', error);
+              output.innerHTML = '<h1>Error compressing data</h1>';
+            });
+          });
+        </script>
+        <script src="{{ url_for('static', path='stars2.js') }}"></script>
+        <script src="{{ url_for('static', path='split.js') }}"></script>
+      </body>
+    </main>
+  </body>
+</html>
